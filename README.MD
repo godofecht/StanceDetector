@@ -98,11 +98,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., ... & Stoyanov, V. (2019). [RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/abs/1907.11692). arXiv preprint arXiv:1907.11692.
 
 ---
-
-<p align="center">
-  <a href="https://yourprojectpage.com/" target="_blank">
-    <img src="images/logo.png" width="300" alt="Project Logo">
-  </a>
-</p>
-
-This is the complete README in Markdown format, ready to be used in your GitHub repository.
