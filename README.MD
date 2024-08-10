@@ -15,67 +15,12 @@ Stance detection involves identifying the position or stance expressed by a user
 - **Preprocessing Pipeline:** Includes text preprocessing steps such as tokenization, stop-word removal, and normalization, tailored for social media text.
 
 ## Installation
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/roberta-stance-detection.git
-   cd roberta-stance-detection
-   ```
-
-2. **Install Dependencies:**
-
-   Make sure you have Python 3.7+ installed. Then, install the required packages:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Download Pre-trained Model:**
-
-   Download the pre-trained RoBERTa model from Hugging Face:
-
-   ```python
-   from transformers import RobertaTokenizer, RobertaForSequenceClassification
-   tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
-   model = RobertaForSequenceClassification.from_pretrained('roberta-base')
-   ```
-
 ## Usage
 
 1. **Data Preparation:**
-
-   Prepare your dataset in a CSV format with at least two columns: `text` for the content and `label` for the stance (support, oppose, neutral).
-
-   ```bash
-   ├── data/
-   │   ├── train.csv
-   │   └── test.csv
-   ```
-
 2. **Training the Model:**
-
-   Run the training script to fine-tune the RoBERTa model on your dataset:
-
-   ```bash
-   python train.py --data_dir data/ --output_dir model_output/
-   ```
-
 3. **Inference:**
-
-   After training, use the model to predict stances on new data:
-
-   ```bash
-   python predict.py --input_file new_data.csv --model_dir model_output/ --output_file predictions.csv
-   ```
-
 4. **Evaluation:**
-
-   Evaluate the model's performance using common metrics such as accuracy, F1-score, precision, and recall:
-
-   ```bash
-   python evaluate.py --predictions_file predictions.csv --labels_file test_labels.csv
-   ```
 
 ## Applications
 
