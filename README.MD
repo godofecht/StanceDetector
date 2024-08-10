@@ -17,13 +17,7 @@ Stance detection involves identifying the position or stance expressed by a user
 ## Installation
 ## Usage
 
-Here's a sample README in markdown format that includes images, steps, and relevant details:
-
 ```markdown
-# Stance Detection Model
-
-This repository contains the code and data processing steps for training a stance detection model using social media data from Twitter and Reddit.
-
 ## Data Preparation
 
 ### Step 1: Extracting Data
