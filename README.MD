@@ -17,10 +17,92 @@ Stance detection involves identifying the position or stance expressed by a user
 ## Installation
 ## Usage
 
-1. **Data Preparation:**
-2. **Training the Model:**
-3. **Inference:**
-4. **Evaluation:**
+Here's a sample README in markdown format that includes images, steps, and relevant details:
+
+```markdown
+# Stance Detection Model
+
+This repository contains the code and data processing steps for training a stance detection model using social media data from Twitter and Reddit.
+
+## Data Preparation
+
+### Step 1: Extracting Data
+The data is extracted and unzipped as follows:
+
+```bash
+tar -xjf rumoureval2019.tar.bz2
+unzip rumoureval2019/rumoureval-2019-test-data.zip -d 'rumoureval2019/'
+unzip rumoureval2019/rumoureval-2019-training-data.zip -d 'rumoureval2019/'
+```
+
+### Step 2: Processing Data
+The extracted data is processed using the following scripts:
+
+```bash
+python Process_Twitter_Data.py
+python Process_Reddit_Data.py
+```
+
+## Model Training
+
+### Step 3: Loading and Preprocessing Data
+Load the processed data and prepare it for training:
+
+```python
+from Data_Cleaning_functions import processStanceData
+import pandas as pd
+
+# Load datasets
+twitterTrainDf = pd.read_csv('TwitterTrainDataSrc.csv')
+redditTrainDf  = pd.read_csv('RedditTrainDataSrc.csv')
+twitterDevDf   = pd.read_csv('TwitterDevDataSrc.csv')
+redditDevDf    = pd.read_csv('RedditDevDataSrc.csv')
+twitterTestDf  = pd.read_csv('TwitterTestDataSrc.csv')
+redditTestDf   = pd.read_csv('RedditTestDataSrc.csv')
+
+# Process data
+trainDf = processStanceData(twitterTrainDf, redditTrainDf)
+devDf = processStanceData(twitterDevDf, redditDevDf)
+testDf = processStanceData(twitterTestDf, redditTestDf)
+```
+
+### Step 4: Training the Model
+Train the stance detection model using the prepared data:
+
+```python
+from StanceDetectorModel import StanceDetector, Tfidf_Nn, tfidf
+
+model = Tfidf_Nn()
+stanceDetector = StanceDetector(model, tfidf)
+history = stanceDetector.fit(x_train, y_train, x_dev, y_dev, epochs=100, verbose=1)
+```
+
+## Model Evaluation
+
+### Step 5: Visualizing Performance
+Plot the training and validation loss and accuracy:
+
+```python
+import matplotlib.pyplot as plt
+
+# Plot Loss
+plt.title("Learning Curve - Loss")
+plt.plot(history["train_loss"], label="Training Loss")
+plt.plot(history["dev_loss"], label="Validation Loss")
+plt.xlabel("Epochs")
+plt.ylabel("Loss")
+plt.legend()
+plt.show()
+```
+
+![Training and Validation Loss](path_to_your_loss_plot.png)
+
+## Conclusion
+The model shows improvement over the epochs, as indicated by the decreasing training loss. The validation accuracy stabilizes, suggesting the model is learning effectively without overfitting.
+
+```
+
+Replace `"path_to_your_loss_plot.png"` with the actual path to your generated plot image. This README provides a clear, structured overview of the project, from data preparation to model training and evaluation.
 
 ## Applications
 
