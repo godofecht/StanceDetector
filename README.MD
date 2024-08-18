@@ -96,8 +96,6 @@ The model shows improvement over the epochs, as indicated by the decreasing trai
 
 ```
 
-Replace `"path_to_your_loss_plot.png"` with the actual path to your generated plot image. This README provides a clear, structured overview of the project, from data preparation to model training and evaluation.
-
 ## Applications
 
 - **Social Media Analysis:** Identify public opinion on trending topics, political issues, and social movements by analyzing stance on platforms like Twitter and Reddit.
