@@ -41,7 +41,7 @@ redditTestDf   = pd.read_csv('RedditTestDataSrc.csv')
 
 #Processing Twitter and Reddit dataframe containig training data
 trainDf = processStanceData(twitterTrainDf, redditTrainDf)
-trainDf.drop(np.where(trainDf!= trainDf)[0][0], inplace=True) # this line contains Nan Value
+trainDf = trainDf.dropna().reset_index(drop=True) # drop any row with a missing value, if there is one
 
 devDf = processStanceData(twitterDevDf, redditDevDf)
 testDf = processStanceData(twitterTestDf, redditTestDf)
