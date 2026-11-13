@@ -1,0 +1,4 @@
+*.csv
+__pycache__/
+rumoureval2019/rumoureval-2019-test-data/
+rumoureval2019/rumoureval-2019-training-data/
