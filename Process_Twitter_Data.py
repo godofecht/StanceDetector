@@ -89,7 +89,8 @@ class TwitterDataProcessor:
         return dataset
 
     def remove_redundant_data(self, df):
-        df.loc[df['inre_x'] == df['source_x'], 'sourceText'] = np.nan
+        # A direct reply to the source post would repeat the same text twice.
+        df.loc[df['inre'] == df['source'], 'sourceText'] = np.nan
         return df
 
     def save_to_csv(self, df, filename):
@@ -105,9 +106,13 @@ class TwitterDataProcessor:
         final_df = self.create_final_dataset(merged_df)
         final_df = self.remove_redundant_data(final_df)
         
-        # Select columns to retain
-        final_columns = ['text_x', 'id', 'inre_x', 'source_x', 'label_x', 'inreText', 'sourceText']
-        final_df = final_df[final_columns]
+        # Select columns to retain. The merges above join on 'inre' and 'source',
+        # so those columns keep their names. The CSV keeps the column names the
+        # 2023 scripts wrote, which Data_Cleaning_functions.py reads.
+        final_columns = ['text', 'id', 'inre', 'source', 'label', 'inreText', 'sourceText']
+        final_df = final_df[final_columns].rename(columns={
+            'text': 'text_x', 'inre': 'inre_x', 'source': 'source_x', 'label': 'label_x'
+        })
         
         # Save final dataset to CSV
         self.save_to_csv(final_df, f'Twitter{self.dataset_type.capitalize()}DataSrc.csv')
