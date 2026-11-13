@@ -1,6 +1,6 @@
 # StanceDetector
 
-An improved stance-prediction model built on BERT and RoBERTa.
+Sorts replies to rumours on Twitter and Reddit into support, deny, query or comment, using TF-IDF features and a small neural network.
 
 ## What this is
 
@@ -33,7 +33,7 @@ You run it in Python. It prints its progress while it trains, then a table of ho
 - [Git](https://git-scm.com/downloads).
 - About 2 GB of free disk space for the Python packages.
 
-These steps were run on macOS with Python 3.12, pandas 2.2.3, scikit-learn 1.9.0, SciPy 1.17.1 and PyTorch 2.10.0.
+These steps were run on macOS with Python 3.12, from a fresh clone, with pandas 2.2.3 and again with pandas 3.1.1, scikit-learn 1.9.1 and PyTorch 2.15.0.
 
 1. Download the code:
 
@@ -61,44 +61,24 @@ These steps were run on macOS with Python 3.12, pandas 2.2.3, scikit-learn 1.9.0
 
    On Windows, you can instead right-click each zip file, choose **Extract All**, and extract it into the `rumoureval2019` folder.
 
-4. Turn the raw posts into CSV files. The current `Process_Twitter_Data.py` and `Process_Reddit_Data.py` stop with `KeyError: 'inre_x'`, so use the 2023 versions from the git history:
+4. Turn the raw posts into CSV files:
 
    ```bash
-   git show 86d4e9e9:Process_Twitter_Data.py > Process_Twitter_Data_2023.py
-   git show 86d4e9e9:Process_Reddit_Data.py > Process_Reddit_Data_2023.py
-   python Process_Twitter_Data_2023.py
-   python Process_Reddit_Data_2023.py
+   python Process_Twitter_Data.py
+   python Process_Reddit_Data.py
    ```
 
-   You should now have six files: `TwitterTrainDataSrc.csv`, `TwitterDevDataSrc.csv`, `TwitterTestDataSrc.csv` and the same three for Reddit. Pandas may print warnings about "chained assignment". They do not stop the scripts.
+   You should now have six files: `TwitterTrainDataSrc.csv`, `TwitterDevDataSrc.csv`, `TwitterTestDataSrc.csv` and the same three for Reddit. Pandas may print a `FutureWarning` about `read_json`. It does not stop the scripts.
 
-5. Open `StanceDetectorModel.py` in a text editor and put a `#` at the start of line 44, the line that begins `trainDf.drop(`. With freshly made CSV files there is no empty value for it to drop, and it stops with an `IndexError`.
-
-6. Save this as `train.py` in the same folder:
-
-   ```python
-   from StanceDetectorModel import StanceDetector, Tfidf_Nn, tfidf
-   from StanceDetectorModel import x_train, y_train, x_dev, y_dev, x_test, y_test
-   from sklearn.metrics import classification_report
-
-   model = Tfidf_Nn()
-   stance_detector = StanceDetector(model, tfidf)
-   history = stance_detector.fit(x_train, y_train, x_dev, y_dev, epochs=100, verbose=1)
-
-   predictions, probabilities, real = stance_detector.get_predictions(x_test, y_test)
-   print(classification_report(real, predictions, digits=4,
-                               target_names=['support', 'deny', 'query', 'comment']))
-
-   print(stance_detector.predict_new(model, 'example.txt'))
-   ```
-
-7. Run it:
+5. Train and test the model with `train.py`, which is in the repo:
 
    ```bash
    python train.py
    ```
 
-   Training takes about ten seconds. It prints one line per epoch (one pass over the training data) for 100 epochs. The development accuracy should end near 0.67. Then it prints a table for the test set. The overall accuracy should be about 0.74 and the macro average F1 about 0.34. The last line labels the two posts in `example.txt`, which came out as support and comment.
+   Training takes about ten seconds. It prints one line per epoch (one pass over the training data) for 100 epochs. The development accuracy should end near 0.67. Then it prints a table for the test set of 1,756 replies. The overall accuracy should be about 0.74 and the macro average F1 about 0.35. The last line labels the two posts in `example.txt`, which came out as support and comment.
+
+   `train.py` builds the model, trains it, prints the classification report and labels `example.txt`. Open it to see each step.
 
 To draw the learning curves from the earlier README, add this to the end of `train.py`:
 
@@ -132,7 +112,8 @@ The notebook `stance_detector.ipynb` runs the same steps. It was written for Goo
 | --- | --- |
 | `StanceDetectorModel.py` | loads the data, builds TF-IDF, defines the network (`Tfidf_Nn`) and the training class (`StanceDetector`) |
 | `Data_Cleaning_functions.py` | joins the reply with its context, replaces links and mentions, turns labels into numbers |
-| `Process_Twitter_Data.py`, `Process_Reddit_Data.py` | read the raw posts and labels and write CSV files (see Run it for the working versions) |
+| `Process_Twitter_Data.py`, `Process_Reddit_Data.py` | read the raw posts and labels and write CSV files |
+| `train.py` | trains the model and prints the test results |
 | `DataPaths.py` | where the unzipped data lives |
 | `stance_detector.ipynb` | a notebook that runs the whole pipeline, with saved results |
 | `example.txt` | two example posts to label |
@@ -169,7 +150,7 @@ Results saved in the notebook, on the 1,827-reply test set:
 | query | 0.156 | 0.204 | 0.177 |
 | comment | 0.842 | 0.880 | 0.861 |
 
-Accuracy 0.740, macro average F1 0.338. The rerun for this guide gave accuracy 0.741 and macro F1 0.337. Over 100 epochs the training loss falls from 1.39 to 0.85 while the development loss rises from about 1.38 to about 1.42, so the model starts to overfit (learn the training set too closely) well before the end.
+Accuracy 0.740, macro average F1 0.338. The notebook's data scripts kept 90 Reddit "more comments" placeholders, which have no text of their own and were given the text of the reply before them. The current scripts leave these out, so the test set is 1,756 replies. On it, `train.py` gives accuracy 0.738 and macro F1 0.354. Over 100 epochs the training loss falls from 1.39 to 0.85 while the development loss rises from about 1.38 to about 1.42, so the model starts to overfit (learn the training set too closely) well before the end.
 
 Possible uses of stance detection:
 
@@ -180,11 +161,9 @@ Possible uses of stance detection:
 
 ## Project status
 
-The model trains and gives the results above when run as described in Run it. Known problems:
+The whole pipeline runs from a fresh clone as described in Run it and gives the results above. Known problems:
 
-- The repo description and the earlier README describe a RoBERTa model. The code is a TF-IDF model, and no BERT or RoBERTa code is included.
-- `Process_Twitter_Data.py` and `Process_Reddit_Data.py` were rewritten in 2024 and now stop with `KeyError: 'inre_x'`. The 2023 versions work.
-- Line 44 of `StanceDetectorModel.py` assumes the training data has an empty value and fails when it does not.
+- The earlier README described a RoBERTa model. The code is a TF-IDF model, and no BERT or RoBERTa code is included.
 - `StanceDetectorModel.py` reads all six CSV files as soon as it is imported, so it cannot be imported before step 4.
 - `rumoureval2019/.DS_Store` is a stray macOS file.
 
